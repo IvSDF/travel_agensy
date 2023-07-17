@@ -6,9 +6,7 @@ use App\Models\Role;
 use App\Models\Travel;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AdminTravelTest extends TestCase
@@ -24,7 +22,6 @@ class AdminTravelTest extends TestCase
 
     public function test_non_admin_user_cannot_access_adding_travel(): void
     {
-        $this->seed(RoleSeeder::class);
         $user = User::factory()->create();
         $user->roles()->attach(Role::where('name', 'editor')->value('id'));
         $response = $this->actingAs($user)->postJson('/api/v1/admin/travels');
@@ -35,23 +32,20 @@ class AdminTravelTest extends TestCase
     public function test_saves_travel_successfully_with_valid_data(): void
     {
         $this->seed(RoleSeeder::class);
-        $user =User::factory()->create();
+        $user = User::factory()->create();
         $user->roles()->attach(Role::where('name', 'admin')->value('id'));
 
         $response = $this->actingAs($user)->postJson('/api/v1/admin/travels', [
             'name' => 'Travel name',
         ]);
-
         $response->assertStatus(422);
 
-        $response = $this->actingAs($user)->postJson('/api/v1/admin/travels',[
+        $response = $this->actingAs($user)->postJson('/api/v1/admin/travels', [
             'name' => 'Travel name',
             'is_public' => 1,
             'description' => 'Some description',
-            'number_of_days' => 5
+            'number_of_days' => 5,
         ]);
-
-//        dd($response);
 
         $response->assertStatus(201);
 
@@ -69,7 +63,7 @@ class AdminTravelTest extends TestCase
         $response = $this->actingAs($user)->putJson('/api/v1/admin/travels/'.$travel->id, [
             'name' => 'Travel name',
         ]);
-        $response->assertStatus(404);
+        $response->assertStatus(422);
 
         $response = $this->actingAs($user)->putJson('/api/v1/admin/travels/'.$travel->id, [
             'name' => 'Travel name updated',
@@ -78,7 +72,7 @@ class AdminTravelTest extends TestCase
             'number_of_days' => 5,
         ]);
 
-        $response->assertStatus(404);
+        $response->assertStatus(200);
 
         $response = $this->get('/api/v1/travels');
         $response->assertJsonFragment(['name' => 'Travel name updated']);
