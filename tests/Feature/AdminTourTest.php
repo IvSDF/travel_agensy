@@ -18,7 +18,6 @@ class AdminTourTest extends TestCase
         $travel = Travel::factory()->create();
         $response = $this->postJson('/api/v1/admin/travels/'.$travel->id.'/tours');
 
-//        dd($response);
         $response->assertStatus(401);
     }
 
@@ -28,9 +27,9 @@ class AdminTourTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach(Role::where('name', 'editor')->value('id'));
         $travel = Travel::factory()->create();
+        $response = $this->actingAs($user)->postJson('/api/v1/admin/travels/'.$travel->id.'/tours');
 
-        $response = $this->actingAs($user)->postJson('/api/v1/admin/travels/'. $travel->id .'/tours');
-        $response->assertStatus(404);
+        $response->assertStatus(403);
     }
 
     public function test_saves_tour_successfully_with_valid_data(): void
@@ -43,16 +42,16 @@ class AdminTourTest extends TestCase
         $response = $this->actingAs($user)->postJson('/api/v1/admin/travels/'.$travel->id.'/tours', [
             'name' => 'Tour name',
         ]);
-        $response->assertStatus(404);
+        $response->assertStatus(422);
 
-        $response = $this->actingAs($user)->json('POST', '/api/v1/admin/travels/'.$travel->id.'/tours', [
+        $response = $this->actingAs($user)->postJson('/api/v1/admin/travels/'.$travel->id.'/tours', [
             'name' => 'Tour name',
-            'starting_date' => now(),
-            'ending_date' => now()->addDays(5),
+            'starting_date' => now()->toDateString(),
+            'ending_date' => now()->addDay()->toDateString(),
             'price' => 123.45,
         ]);
 
-        $response->assertStatus(404);
+        $response->assertStatus(201);
 
         $response = $this->get('/api/v1/travels/'.$travel->slug.'/tours');
         $response->assertJsonFragment(['name' => 'Tour name']);

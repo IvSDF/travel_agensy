@@ -21,7 +21,7 @@ class TourFactory extends Factory
         return [
             'name' => fake()->text(20),
             'starting_date' => now(),
-//            'travel_id' => $travel->id,
+            //            'travel_id' => $travel->id,
             'ending_date' => now()->addDays(rand(1, 10)),
             'price' => fake()->randomFloat(2, 10, 999),
         ];

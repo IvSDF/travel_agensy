@@ -7,7 +7,6 @@ use App\Http\Requests\TourRequest;
 use App\Http\Resources\TourResource;
 use App\Models\Travel;
 
-
 class TourController extends Controller
 {
     public function store(Travel $travel, TourRequest $request)
@@ -17,4 +16,3 @@ class TourController extends Controller
         return new TourResource($tour);
     }
 }
-
