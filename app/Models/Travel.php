@@ -23,30 +23,27 @@ class Travel extends Model
         'number_of_days',
     ];
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name'
-            ]
-        ];
-    }
-
-    public function numberOfNights(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value, $attributes) => $attributes['number_of_days'] - 1
-        );
-    }
-
     public function tours(): HasMany
     {
         return $this->hasMany(Tour::class);
     }
 
-    public function getRouteKeyName(): string
+    public function numberOfNights(): Attribute
     {
-        return 'slug';
+        return Attribute::make(
+            get: fn ($value, $attributes) => $attributes['number_of_days'] - 1
+        );
     }
 
+    /**
+     * Return the sluggable configuration array for this model.
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name',
+            ],
+        ];
+    }
 }
