@@ -12,7 +12,7 @@ class TourController extends Controller
 {
     public function store(Travel $travel, TourRequest $request)
     {
-        dd($request);
+        dd($travel);
 //        $tour->create([
 //            'travel_id' => '99a87ecd-bd0c-4bb0-9a1d-5793e895ac30',
 //            'name' => 'New tour',
